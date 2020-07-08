@@ -1,0 +1,31 @@
+
+.concent {
+	padding: 265rpx 60rpx 174rpx;
+}
+.index-c {
+	width: 100%;
+	padding-bottom: 124rpx;
+	line-height: 56rpx;
+	font-size: 34rpx;
+	color: #333;
+	text-align: left;
+}
+.join-btn {
+	width: 486rpx;
+	height: 84rpx;
+	line-height: 84rpx;
+	margin: 0 auto 468rpx;
+	font-size: 38rpx;
+	color: #fff;
+	text-align: center;
+	background: #2878FF;
+	border: 1px solid #17A1E8;
+	border-radius: 42px;
+}
+.index-f {
+	width: 100%;
+	font-size: 32rpx;
+	color: #333;
+	text-align: center;
+}
+

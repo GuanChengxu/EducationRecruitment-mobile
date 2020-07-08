@@ -1,0 +1,1 @@
+<view class="concent"><view><view class="index-c">{{'Hi，'+telInfo+"邀请你参加“"+examNameInfo+'”的测试'}}</view><view data-event-opts="{{[['tap',[['joinExam',['$event']]]]]}}" class="join-btn" bindtap="__e">加入考试</view><view class="index-f">一站式在线组卷/考试/统计平台</view></view></view>

@@ -1,0 +1,38 @@
+{
+    "appInfo": {},
+    "appid": "touristappid",
+    "appkey": "",
+    "compilation-args": {
+        "common": {
+            "babelSetting": {
+                "ignore": []
+            },
+            "enhance": true
+        }
+    },
+    "condition": {
+        "swan": {
+            "current": 0,
+            "list": [
+                {
+                    "id": 0,
+                    "name": "",
+                    "pathName": "pages/login/login",
+                    "query": ""
+                }
+            ]
+        }
+    },
+    "host": "baiduboxapp",
+    "libVersion": "",
+    "projectname": "模拟考试",
+    "setting": {
+        "urlCheck": true
+    },
+    "swan": {
+        "baiduboxapp": {
+            "extensionJsVersion": "1.12.3",
+            "swanJsVersion": "3.170.14"
+        }
+    }
+}

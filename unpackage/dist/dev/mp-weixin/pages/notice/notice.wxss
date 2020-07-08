@@ -1,0 +1,61 @@
+
+.page-head{
+	position: fixed;
+	top: 0;
+	z-index: 998;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	        justify-content: center;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	        align-items: center;
+	width:100%;
+	height:88rpx;
+	font-size: 36rpx;
+	text-align: center;
+	background:#FEFEFE;
+	-webkit-box-shadow:0px 4rpx 8rpx 0px rgba(0, 0, 0, 0.35);
+	        box-shadow:0px 4rpx 8rpx 0px rgba(0, 0, 0, 0.35)
+}
+.uni-page-head-btn{
+	position: absolute;
+	top:0;
+	left: 0;
+	line-height: 104rpx;
+}
+.page-head-b{
+	font-weight: 400;
+	font-size: 46rpx;
+}
+.page-home{
+	padding: 88rpx 30rpx;
+}
+.page-h-des{
+	display: block;
+	width: 100%;
+	padding-bottom: 154rpx;
+	font-size:30rpx;
+	line-height: 50rpx;
+	text-indent: 50rpx;
+	text-align: justify;
+	overflow: hidden;
+}
+.next-btn{
+	width: 100%;
+	height: 88rpx;
+	font-size: 34rpx;
+	color: #F8F9FB;
+	line-height: 88rpx;
+	text-align: center;
+	background-color: #17A1E8;
+}
+.h-des{
+	display: block;
+	width: 100%;
+	text-indent: 28rpx;
+	overflow: hidden;
+}
+
