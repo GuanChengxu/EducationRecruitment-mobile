@@ -1,9 +1,5 @@
 <template>
-	<view class="concent">
-		<view class="page-head">
-			<view class="uni-page-head-btn"><i class="uni-btn-icon page-head-b" @click="back"></i></view>
-			<view class="page-head-title">报名</view>
-		</view>
+	<view class="concent_l">
 		<view class="concent_box">
 			<view class="signUp_box">
 				<view class="signUp_top">
@@ -12,8 +8,8 @@
 					<image src="/static/bigpic.png" mode=""></image>
 				</view>
 				<view class="signUp_bot clearfix">
-					<view class="start" @click="start()">开始报名</view>
-					<view class="search fr" @click="search()">已报名查询></view>
+					<view :class="status==1?'start':'start noclick'" @click="start()">{{status==1?'开始报名':(status==2?'已结束':'未开始')}}</view>
+					<view :class="status==1 || status==2?'search fr':'noclick search fr'" @click="search()">已报名查询></view>
 				</view>
 			</view>
 		</view>
@@ -151,7 +147,7 @@ export default {
 							console.log(result.data)
 							if (result.data.data.queryStatus != 1) {
 								uni.showToast({
-									title: '该招聘还未到查询时间',
+									title: '该招聘不在查询时间之内',
 									icon: 'none',
 									duration: 2000
 								});
@@ -225,20 +221,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.concent {
+.concent_l {
 	background-color: #293991;
 	height: 100vh;
 	padding-bottom: 50rpx;
-	.page-head {
-		background-color: #293991;
-		border-bottom: none;
-		box-shadow: none;
-		.page-head-b,
-		.page-head-title {
-			background-color: #293991;
-			color: #ffffff;
-		}
-	}
 	.signUp_box {
 		padding: 148rpx 46rpx 0;
 		// margin-top: 60rpx;
@@ -265,6 +251,7 @@ export default {
 				text-align: center;
 				color: #ffffff;
 				margin-bottom: 37rpx;
+				padding: 0 30rpx;
 			}
 			image {
 				display: block;
@@ -292,6 +279,10 @@ export default {
 				&::after {
 					display: none;
 				}
+			}
+			.noclick{
+				pointer-events:none;
+				opacity: 0.3;
 			}
 			.search {
 				font-size: 32rpx;

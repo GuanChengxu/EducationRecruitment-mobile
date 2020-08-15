@@ -1,9 +1,5 @@
 <template>
-	<view class="concent">
-		<view class="page-head">
-			<view class="uni-page-head-btn"><i class="uni-btn-icon page-head-b" @click="back"></i></view>
-			<view class="page-head-title">教师招聘</view>
-		</view>
+	<view class="concent_l">
 		<view class="concent_box" v-show="showData">
 			<view class="index_banner"><image src="/static/banner.png" mode=""></image></view>
 			<view class="index_list">
@@ -15,7 +11,7 @@
 					</view>
 					<view class="btn_box clearfix">
 						<view v-bind:class="item.applyStatus == 1?'gotoSignUp blue fr':'gotoSignUp black fr'" @click="gotoSignUp(item)">{{item.applyStatus == 1?'去报名':(item.applyStatus == 2?'已结束':'未开始')}}</view>
-						<view class="gotoDetail fr" @click="gotoDetail(item)">招生简章</view>
+						<view class="gotoDetail fr" @click="gotoDetail(item)">招聘简章</view>
 					</view>
 				</view>
 				<text class="index_text">
@@ -33,47 +29,24 @@ export default {
 	data() {
 		return {
 			tableData: [],
-			showData:true
+			showData:false
 		};
 	},
 	onLoad(option) {
 		const that = this;
 		const islogin = this.$islogin.isLogin;
-		const token = uni.getStorageSync('dhToken');
-		if (token && !islogin) {
-			that.showData = false;
-			uni.showLoading({
-			    title: '',
-				mask:true
-			});
-			uni.request({
-				url: common.port.infoByToken +'?token='+token+'&origin=0',
-				method: 'GET',
-				dataType: 'json',
-				success: result => {
-					that.showData = true;
-					if (result.data.code == 200) {
-						uni.hideLoading();
-						if (result.data.data.authlevel < 1) {
-							uni.showToast({
-								title: '请补全个人信息',
-								icon: 'none',
-								duration: 2000
-							});
-						} else {
-							uni.setStorageSync('userInfo', result.data.data);
-							this.$islogin.setLogin();
-						}
-					} else {
-						uni.hideLoading();
-						uni.showToast({
-							title: result.data.msg,
-							icon: 'none',
-							duration: 2000
-						});
-					}
+		uni.showLoading({
+		    title: ''
+		});
+		if (!islogin) {
+			var timeInterval = setInterval(function(){
+				const token = uni.getStorageSync('dhToken');
+				// const token = option.token;
+				if(token){
+					that.getUser(token,islogin);
+					clearInterval(timeInterval);
 				}
-			});
+			},2000)
 		}
 		//获取列表信息
 		uni.request({
@@ -121,13 +94,46 @@ export default {
 			}
 			return returnData;
 		},
+		getUser(token,islogin){
+			const that = this;
+			if (token && !islogin) {
+				uni.request({
+					url: common.port.infoByToken +'?token='+token+'&origin=0',
+					method: 'GET',
+					dataType: 'json',
+					success: result => {
+						that.showData = true;
+						if (result.data.code == 200) {
+							uni.hideLoading();
+							if (result.data.data.authlevel < 1) {
+								uni.showToast({
+									title: '请补全个人信息',
+									icon: 'none',
+									duration: 2000
+								});
+							} else {
+								uni.setStorageSync('userInfo', result.data.data);
+								this.$islogin.setLogin();
+							}
+						} else {
+							uni.hideLoading();
+							uni.showToast({
+								title: result.data.msg,
+								icon: 'none',
+								duration: 2000
+							});
+						}
+					}
+				});
+			}
+		},
 		//去报名
 		gotoSignUp(row) {
 			uni.navigateTo({
 				url: '/pages/start/start?key=' + row.applyId
 			});
 		},
-		//招生简章
+		//招聘简章
 		gotoDetail(row) {
 			uni.navigateTo({
 				url: '/pages/detail/detail?key=' + row.applyId

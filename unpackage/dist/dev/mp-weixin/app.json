@@ -1,24 +1,25 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/detail/detail",
+    "pages/start/start",
     "pages/notice/notice",
-    "pages/sign/sign",
-    "pages/mistakes/mistakes",
-    "pages/simulate/simulate",
-    "pages/grade/grade",
-    "pages/register/register",
-    "pages/login/login",
-    "pages/four/four",
-    "pages/pwd/pwd",
-    "pages/paper/paper"
+    "pages/signUpSuccess/signUpSuccess",
+    "pages/signUpFail/signUpFail",
+    "pages/signUpNodata/signUpNodata",
+    "pages/signUpReview/signUpReview",
+    "pages/addSuccess/addSuccess",
+    "pages/addFail/addFail",
+    "pages/signUp/signUp"
   ],
   "subPackages": [],
   "window": {
+    "navigationStyle": "custom",
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "模拟考试",
+    "navigationBarTitleText": "教师招聘",
     "navigationBarBackgroundColor": "#fff",
     "backgroundColor": "#fff"
   },
   "usingComponents": {},
-  "sitemapLocation": "sitemap99.json"
+  "sitemapLocation": "sitemap19.json"
 }

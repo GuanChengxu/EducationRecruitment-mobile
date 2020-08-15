@@ -1,13 +1,5 @@
 <template>
-	<view class="concent">
-		<view class="page-head">
-			<view class="uni-page-head-btn">
-				<i class="uni-btn-icon page-head-b" @click="back"></i>
-			</view>
-			<view class="page-head-title">
-				{{linkName}}
-			</view>
-		</view>
+	<view class="concent_l">
 		<view class="concent_box">
 			<view class="signUp_box">
 				<view class="signUp_top">
@@ -79,20 +71,10 @@
 </script>
 
 <style lang="scss" scoped>
-	.concent{
+	.concent_l{
 		background-color: #293991;
 		height: 100vh;
 		padding-bottom: 50rpx;
-		.page-head{
-			background-color: #293991;
-			border-bottom: none;
-			box-shadow: none;
-			.page-head-b,
-			.page-head-title{
-				background-color: #293991;
-				color: #FFFFFF;
-			}
-		}
 		.concent_box{
 			padding: 88rpx 46rpx 0;
 			.signUp_box{

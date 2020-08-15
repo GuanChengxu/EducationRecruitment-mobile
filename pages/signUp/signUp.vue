@@ -1,9 +1,5 @@
 <template>
-	<view class="concent">
-		<view class="page-head">
-			<view class="uni-page-head-btn"><i class="uni-btn-icon page-head-b" @click="back"></i></view>
-			<view class="page-head-title">{{ title }}</view>
-		</view>
+	<view class="concent_l">
 		<view class="concent_box">
 			<view class="signUp_con">
 				<view class="con1" v-if="stepData == 1">
@@ -42,7 +38,7 @@
 						</view>
 						<view class="image_box fr clearfix">
 							<view class="choseImg" @click="choseImg"></view>
-							<image class="img" v-bind:src="'http://154.8.201.198:8081' + imageUrl" mode=""></image>
+							<image class="img" v-bind:src="'https://ystwx.yantai.gov.cn/jneduapi2' + imageUrl" mode=""></image>
 							<image class="uploader" v-show="!imageUrl" src="/static/uploader.png" mode=""></image>
 							<image-cropper :src="tempFilePath" :crop-width="295" :crop-height="413" :crop-fixed="true" @confirm="confirm" @cancel="cancel"></image-cropper>
 						</view>
@@ -97,6 +93,14 @@
 						<view class="title fl">教师资格证编号</view>
 						<view class="input_box fl clearfix"><input type="text" v-model="userInfo.identifier.text" placeholder="请输入您的资格证编号" /></view>
 					</view>
+					<view class="input clearfix">
+						<view class="title fl">毕业年份</view>
+						<view class="time_box fl clearfix">
+							<picker class="picker" mode="date" :end="todayTimeYear" fields="year" :value="userInfo.graduationTime.text" @change="bindgTimeChange($event)"></picker>
+							<view v-bind:class="userInfo.graduationTime.text ? 'chose_data have_data fl' : 'chose_data fl'">{{ userInfo.graduationTime.text ? userInfo.graduationTime.text : '请选择您的毕业年份' }}</view>
+							<image class="fl" src="/static/xiala.png" mode=""></image>
+						</view>
+					</view>
 					<view class="select clearfix">
 						<view class="title fl">最高学历</view>
 						<view class="select_chose fl clearfix" @click="changeChose('educationSelect')">
@@ -131,6 +135,19 @@
 									{{ item.selected.name ? item.selected.name : '请选择您的' + item.type + '学历性质' }}
 								</view>
 								<image class="fl" src="/static/xiala.png" mode=""></image>
+							</view>
+						</view>
+					</view>
+					<view class="pic_list">
+						<view class="tle">上传证明材料</view>
+						<view class="p">*(选填)请上传您的学历学位证书，教师资格证等证明</view>
+						<view class="pic_box clearfix">
+							<view class="img fl" v-for="(item,index) in picList" :key="index">
+							    <image class="close" @click="removePic(index)" src="/static/webx.png" alt=""></image>
+							    <image class="pic" :src="'https://ystwx.yantai.gov.cn/jneduapi2'+item.url" alt=""></image>
+							</view>
+							<view class="upload fl" v-if="picList.length<6">
+								<image @click="uploadPic" src="/static/addPic.png" mode=""></image>
 							</view>
 						</view>
 					</view>
@@ -216,6 +233,7 @@ export default {
 	data() {
 		return {
 			todayTime:'',
+			todayTimeYear:'',
 			fileKey: '',
 			//裁剪图片
 			tempFilePath: '',
@@ -248,6 +266,9 @@ export default {
 			stationError: false,
 			stationErrorText: '',
 			userInfo: {
+				graduationTime:{
+					text:null,
+				},
 				name: {
 					text: null,
 					isdisabled: false
@@ -337,11 +358,11 @@ export default {
 				},
 				{
 					id: 2,
-					name: '硕士'
+					name: '硕士研究生'
 				},
 				{
 					id: 3,
-					name: '博士'
+					name: '博士研究生'
 				}
 			],
 			educationSelect: {
@@ -420,11 +441,14 @@ export default {
 			//用户信息
 			userData: {},
 			//之前保存的最高学历
-			highest:''
+			highest:'',
+			//证明资料
+		    picList:[]
 		};
 	},
 	onLoad(option) {
 		this.todayTime = new Date().getFullYear() + '-' + ((new Date().getMonth()+1) > 10 ? new Date().getMonth()+1:'0'+(new Date().getMonth()+1)) +'-'+ (new Date().getDate()>10 ? new Date().getDate() : '0'+new Date().getDate())
+		this.todayTimeYear = new Date().getFullYear();
 		const islogin = this.$islogin.isLogin;
 		const that = this;
 		this.userData = uni.getStorageSync('userInfo');
@@ -481,7 +505,7 @@ export default {
 											});
 										} else if (res.data.data.isverify == 3 || res.data.data.isverify == 0) {
 											//岗位
-											that.getTeacher(res.data.data.unitId, res.data.data.subjectId);
+											that.getTeacher(res.data.data.unitId, res.data.data.postId);
 											//个人资料
 											that.teacherId = res.data.data.teacherId;
 											that.imageUrl = res.data.data.photo;
@@ -505,6 +529,10 @@ export default {
 													isdisabled: true
 												};
 											}
+											if(res.data.data.credentials && res.data.data.credentials.length>0){
+											    this.picList = res.data.data.credentials;
+											}
+											that.userInfo.graduationTime.text = res.data.data.graduateTime;
 											that.userInfo.nation.text = res.data.data.nation;
 											that.userInfo.origin.text = res.data.data.birthplace;
 											that.userInfo.phone.text = res.data.data.mobile;
@@ -572,15 +600,15 @@ export default {
 													id: 1,
 													name: '本科'
 												};
-											} else if (res.data.data.certificationInfo.highestEducation == '硕士') {
+											} else if (res.data.data.certificationInfo.highestEducation == '硕士研究生') {
 												that.educationSelect = {
 													id: 2,
-													name: '硕士'
+													name: '硕士研究生'
 												};
-											} else if (res.data.data.certificationInfo.highestEducation == '博士') {
+											} else if (res.data.data.certificationInfo.highestEducation == '博士研究生') {
 												that.educationSelect = {
 													id: 3,
-													name: '博士'
+													name: '博士研究生'
 												};
 											}
 											//博士
@@ -781,7 +809,7 @@ export default {
 									var teacherList = [];
 									res.data.data.forEach((v, i) => {
 										teacherList.push({
-											value: v.subjectId,
+											value: v.jobId,
 											label: v.subjectName
 										});
 									});
@@ -808,11 +836,10 @@ export default {
 						} else {
 							var job = '';
 							this.stationOldData.forEach((v, i) => {
-								if (v.subjectId == this.stationSelected.value) {
+								if (v.jobId == this.stationSelected.value) {
 									job = v;
 								}
 							});
-							console.log(job)
 							if(job.educationName != '不限'){
 								this.stationError = true;
 								this.stationErrorText = '您选择的岗位学历要求'+job.educationName+'以上';
@@ -832,11 +859,11 @@ export default {
 									},
 									{
 										id: 2,
-										name: '硕士'
+										name: '硕士研究生'
 									},
 									{
 										id: 3,
-										name: '博士'
+										name: '博士研究生'
 									}
 								];
 							} else if (job.educationName == '专科') {
@@ -851,11 +878,11 @@ export default {
 									},
 									{
 										id: 2,
-										name: '硕士'
+										name: '硕士研究生'
 									},
 									{
 										id: 3,
-										name: '博士'
+										name: '博士研究生'
 									}
 								];
 							} else if (job.educationName == '本科') {
@@ -866,29 +893,29 @@ export default {
 									},
 									{
 										id: 2,
-										name: '硕士'
+										name: '硕士研究生'
 									},
 									{
 										id: 3,
-										name: '博士'
+										name: '博士研究生'
 									}
 								];
-							} else if (job.educationName == '硕士') {
+							} else if (job.educationName == '硕士研究生') {
 								this.educationData = [
 									{
 										id: 2,
-										name: '硕士'
+										name: '硕士研究生'
 									},
 									{
 										id: 3,
-										name: '博士'
+										name: '博士研究生'
 									}
 								];
-							} else if (job.educationName == '博士') {
+							} else if (job.educationName == '博士研究生') {
 								this.educationData = [
 									{
 										id: 3,
-										name: '博士'
+										name: '博士研究生'
 									}
 								];
 							}
@@ -973,6 +1000,40 @@ export default {
 					break;
 			}
 		},
+		//上传图片
+		uploadPic(){
+			const that = this;
+			if(that.picList.length<6){
+				uni.chooseImage({
+					count: 6 - that.picList.length, //默认9
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					sourceType: ['album'], //从相册选择
+					success: function (res) {
+						res.tempFiles.forEach((v,i)=>{
+							uni.uploadFile({
+								// 需要上传的地址
+								url: common.port.avatar,
+								// file  需要上传的文件
+								file: v,
+								name: 'file',
+								success(res) {
+									// 显示上传信息
+									if (res.statusCode == 200 && JSON.parse(res.data).code == 200) {
+										that.picList.push({url:JSON.parse(res.data).imgUrl});
+									} else {
+										uni.showToast({
+											title: '上传图片失败，请重新尝试',
+											icon: 'none',
+											duration: 2000
+										});
+									}
+								}
+							});
+						})
+					}
+				});	
+			}
+		},
 		//下一步
 		next(num) {
 			if (num == 2) {
@@ -984,7 +1045,7 @@ export default {
 					this.title = '个人资料';
 					var job = '';
 					this.stationOldData.forEach((v, i) => {
-						if (v.subjectId == this.stationSelected.value) {
+						if (v.jobId == this.stationSelected.value) {
 							job = v;
 						}
 					});
@@ -1007,11 +1068,11 @@ export default {
 							},
 							{
 								id: 2,
-								name: '硕士'
+								name: '硕士研究生'
 							},
 							{
 								id: 3,
-								name: '博士'
+								name: '博士研究生'
 							}
 						];
 					} else if (job.educationName == '专科') {
@@ -1026,11 +1087,11 @@ export default {
 							},
 							{
 								id: 2,
-								name: '硕士'
+								name: '硕士研究生'
 							},
 							{
 								id: 3,
-								name: '博士'
+								name: '博士研究生'
 							}
 						];
 					} else if (job.educationName == '本科') {
@@ -1041,29 +1102,29 @@ export default {
 							},
 							{
 								id: 2,
-								name: '硕士'
+								name: '硕士研究生'
 							},
 							{
 								id: 3,
-								name: '博士'
+								name: '博士研究生'
 							}
 						];
-					} else if (job.educationName == '硕士') {
+					} else if (job.educationName == '硕士研究生') {
 						this.educationData = [
 							{
 								id: 2,
-								name: '硕士'
+								name: '硕士研究生'
 							},
 							{
 								id: 3,
-								name: '博士'
+								name: '博士研究生'
 							}
 						];
-					} else if (job.educationName == '博士') {
+					} else if (job.educationName == '博士研究生') {
 						this.educationData = [
 							{
 								id: 3,
-								name: '博士'
+								name: '博士研究生'
 							}
 						];
 					}
@@ -1132,7 +1193,7 @@ export default {
 						}
 					}
 				];
-			} else if (this.educationSelect.name == '硕士') {
+			} else if (this.educationSelect.name == '硕士研究生') {
 				this.nEducationSelect = [
 					{
 						id: 3,
@@ -1155,7 +1216,7 @@ export default {
 						}
 					}
 				];
-			} else if (this.educationSelect.name == '博士') {
+			} else if (this.educationSelect.name == '博士研究生') {
 				this.nEducationSelect = [
 					{
 						id: 4,
@@ -1189,6 +1250,10 @@ export default {
 					}
 				];
 			}
+		},
+		//删除上传证明材料
+		removePic(num){
+			this.picList.splice(num,1);
 		},
 		//保存个人资料 和 下一步
 		saveUser(pddata) {
@@ -1342,6 +1407,15 @@ export default {
 				postData = false;
 				return false;
 			}
+			if (!code.validateEmpty(this.userInfo.graduationTime.text)) {
+				uni.showToast({
+					title: '请选择毕业年份',
+					icon: 'none',
+					duration: 2000
+				});
+				postData = false;
+				return false;
+			}
 			if (!code.validateEmpty(this.educationSelect.name)) {
 				uni.showToast({
 					title: '请选择最高学历',
@@ -1384,14 +1458,15 @@ export default {
 			}
 			if (postData) {
 				var data = {
-					certificationInfo: {}
+					certificationInfo: {},
+					credentials:[]
 				};
 				data.teacherId = this.teacherId;
 				data.userId = this.userData.uuid;
 				data.recruitId = this.key;
 				data.photo = this.imageUrl;
 				data.unitId = this.companySelected.value;
-				data.subjectId = this.stationSelected.value;
+				// data.subjectId = this.stationSelected.value;
 				data.name = this.userInfo.name.text;
 				data.sex = this.sexSelect.id;
 				data.nation = this.userInfo.nation.text;
@@ -1405,8 +1480,11 @@ export default {
 				data.certificationInfo.kind = this.userInfo.type.text;
 				data.certificationInfo.serialNumber = this.userInfo.identifier.text;
 				data.certificationInfo.highestEducation = this.educationSelect.name;
-				this.companyData.forEach((v, i) => {
-					if (v.unitId == this.companySelected.value) {
+				data.graduateTime = this.userInfo.graduationTime.text;
+				console.log(this.companyData)
+				console.log(this.companySelected)
+				this.stationOldData.forEach((v, i) => {
+					if (v.jobId == this.stationSelected.value) {
 						data.postId = v.jobId;
 					}
 				});
@@ -1429,7 +1507,7 @@ export default {
 							}
 						});
 						break;
-					case '硕士':
+					case '硕士研究生':
 						this.nEducationSelect.forEach((v, i) => {
 							if (v.id == 2) {
 								data.certificationInfo.bachelorAcademy = v.school;
@@ -1443,7 +1521,7 @@ export default {
 							}
 						});
 						break;
-					case '博士':
+					case '博士研究生':
 						this.nEducationSelect.forEach((v, i) => {
 							if (v.id == 2) {
 								data.certificationInfo.bachelorAcademy = v.school;
@@ -1465,6 +1543,12 @@ export default {
 					default:
 						break;
 				}
+				this.picList.forEach((v,i)=>{
+					data.credentials.push({
+						url:v.url,
+						teacherId:this.teacherId
+				    })
+			    })
 				uni.request({
 					url: common.port.saveTeacherInfo,
 					headers: {
@@ -1512,6 +1596,10 @@ export default {
 			} else if (type == 'end') {
 				this.resume[num].endTime = event.target.value;
 			}
+		},
+		//选择毕业时间
+		bindgTimeChange(event) {
+			this.userInfo.graduationTime.text = event.target.value;
 		},
 		//添加经历
 		addResume() {
@@ -1749,15 +1837,14 @@ export default {
 								success: result => {
 									if (result.data.code == 200) {
 										var teacherList = [];
-										console.log(result.data)
 										result.data.data.forEach((v, i) => {
 											teacherList.push({
-												value: v.subjectId,
+												value: v.jobId,
 												label: v.subjectName
 											});
 											if (schoolKey == v.unitId) {
 												that.stationSelected = {
-													value: v.subjectId,
+													value: v.jobId,
 													label: v.subjectName
 												};
 												if(v.educationName != '不限'){
@@ -1942,6 +2029,38 @@ export default {
 				input:-ms-input-placeholder {
 					/* Internet Explorer 10-11 */
 					color: #999999;
+				}
+			}
+			.time_box {
+				position: relative;
+				width: calc(100% - 260rpx);
+				.chose_data {
+					width: calc(100% - 12px - 10px);
+					font-size: 32rpx;
+					line-height: 86rpx;
+					height: 86rpx;
+					color: #999999;
+					text-align: right;
+				}
+				.have_data{
+					color: #333333;
+				}
+				.picker {
+					position: absolute;
+					left: 0;
+					top: 0;
+					width: 100%;
+					height: 100%;
+					opacity: 0;
+					z-index: 9;
+				}
+				image {
+					position: absolute;
+					right: 20rpx;
+					top: 36rpx;
+					width: 14rpx;
+					height: 8rpx;
+					z-index: 2;
 				}
 			}
 		}
@@ -2302,6 +2421,62 @@ export default {
 			}
 			&:last-child:before {
 				display: none;
+			}
+		}
+	}
+}
+.pic_list{
+	padding-top: 22rpx;
+	.tle{
+		font-size:32rpx;
+		font-weight:400;
+		color:rgba(51,51,51,1);
+		line-height: 52rpx;
+		margin-bottom: 10rpx;
+	}
+	.p{
+		font-size:29rpx;
+		font-weight:400;
+		color:rgba(153,153,153,1);
+		line-height:33rpx;
+		margin-bottom: 22rpx;
+	}
+	.pic_box{
+		view:nth-child(3n+3){
+			margin-right: 0rpx;
+		}
+		.img{
+			width: calc(33.33% - 25rpx);
+			height: 208rpx;
+			margin-right: 35rpx;
+			margin-bottom: 35rpx;
+			position: relative;
+			.pic{
+				width: 100%;
+				height: 208rpx;
+			}
+			.close{
+				position: absolute;
+				right: 5rpx;
+				top: 5rpx;
+				width: 20rpx;
+				height: 20rpx;
+				opacity: 1;
+				z-index: 3;
+			}
+		}
+		.upload{
+			width: calc(33.33% - 25rpx);
+			height: 208rpx;
+			margin-right: 35rpx;
+			margin-bottom: 35rpx;
+			text-align: center;
+			background-color: rgba(219,219,219,0.2);
+			image{
+				display: inline-block;
+				width: 67rpx;
+				height: 67rpx;
+				margin-top: 70.5rpx;
 			}
 		}
 	}

@@ -1,5 +1,5 @@
-// const url ="http://localhost:8080";
-const url = "http://154.8.201.198:8081"
+// const url = "https://ystwx.yantai.gov.cn/jntestapi"
+const url = "https://ystwx.yantai.gov.cn/jneduapi2"
 const port = {
 	recruitmentInfo:url+"/edu/recruitment/recruitmentInfo",//获取招聘列表
 	recruitmentById:url+"/edu/recruitment/recruitmentById",//获取招聘信息

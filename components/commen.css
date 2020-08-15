@@ -1,16 +1,17 @@
 .page-head {
 	position: fixed;
 	top: 0;
-	z-index: 998;
+	z-index: 1;
 	display: none;
 	justify-content: center;
 	align-items: center;
-	width: 100%;
-	height: 88rpx;
 	font-size: 36rpx;
 	text-align: center;
 	background: #FEFEFE;
 	box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.1);
+	width: 0px;
+	height: 0px;
+	opacity: 0;
 }
 
 .uni-page-head-btn {
@@ -59,6 +60,7 @@ body.modalOpen {
 .tsHtml * {
 	word-wrap: break-word;
 	word-break: normal;
+	line-height: normal;
 }
 
 .tsHtml img {
@@ -96,54 +98,43 @@ body.modalOpen {
 
 .tsHtml h1 {
 	font-weight: bold;
-
-	margin: 0;
-	line-height: 1;
 }
 
 .tsHtml h2 {
 	font-weight: bold;
-
-	margin: 0;
-	line-height: 1;
 }
 
 .tsHtml h3 {
 	font-weight: bold;
-
-	margin: 0;
-	line-height: 1;
 }
 
 .tsHtml h4 {
 	font-weight: bold;
-
-	margin: 0;
-	line-height: 1;
 }
 
 .tsHtml h5 {
 	font-weight: bold;
-
-	margin: 0;
-	line-height: 1;
 }
 
 .tsHtml h6 {
 	font-weight: bold;
-	margin: 0;
-	line-height: 1;
 }
 
 .tsHtml p {
-	font-weight: normal;
-	margin: 0;
-	line-height: 1;
+	margin: 5px 0;
 }
 
 .tsHtml p {
 	word-wrap: break-word;
 	word-break: normal;
+}
+.tsHtml table {
+	width: 100% !important;
+	border-collapse: collapse;
+	margin: auto;
+}
+.tsHtml table td {
+	font: 12px/1.5 "sans serif",tahoma,verdana,helvetica;
 }
 uni-toast{
 	height: 100vh !important;
@@ -153,4 +144,10 @@ uni-toast .uni-sample-toast{
 }
 uni-toast .uni-simple-toast__text{
 	margin-bottom: 0rpx !important;
+}
+.concent_box{
+	width: 100%;
+}
+.concent_l{
+	width: 100%;
 }

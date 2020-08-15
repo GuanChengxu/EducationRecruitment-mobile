@@ -1,13 +1,5 @@
 <template>
-	<view class="concent">
-		<view class="page-head">
-			<view class="uni-page-head-btn">
-				<i class="uni-btn-icon page-head-b" @click="back"></i>
-			</view>
-			<view class="page-head-title">
-				招聘简章
-			</view>
-		</view>
+	<view class="concent_l">
 		<view class="concent_box">
 			<view class="detail_box">
 				<view class="text_box tsHtml" v-html="content"></view>
@@ -75,10 +67,6 @@
 	.detail_box{
 		padding: 28rpx 28rpx 60rpx;
 		.text_box{
-			font-size: 28rpx;
-			line-height: 48rpx;
-			color: #333333;	
-			white-space: pre-wrap;
 		}
 	}
 	.gotoStart{

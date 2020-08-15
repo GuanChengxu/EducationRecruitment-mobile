@@ -17,48 +17,48 @@
 		<link rel=stylesheet href=./static/index.5ca1c9cc.css> </head> <body><noscript><strong>Please enable JavaScript to
 				continue.</strong></noscript>
 		<div id=app></div>
-		<script src=./static/js/chunk-vendors.151aecf8.js> </script> <script src=./static/js/index.d2fafab3.js> </script> 
+		<script src=./static/js/chunk-vendors.151aecf8.js> </script> <script src=./static/js/index.5d0a1f12.js> </script> 
 		<script src=./static/js/openjsbridge.icity.js> </script>
-		<script>
-			iCityBridge.init(function (hasLogin) {
-				if (hasLogin) {
-					var authFlag = iCityBridge.hasAuth();
-					var version = iCityBridge.getVersion();
-					if (versionStringCompare(version, '4.5.9') == -1) {
-						alert('请更新至最新版app后再进行操作')
-						return
+				<script>
+					iCityBridge.init(function (hasLogin) {
+						if (hasLogin) {
+							var authFlag = iCityBridge.hasAuth();
+							var version = iCityBridge.getVersion();
+							if (versionStringCompare(version, '4.5.9') == -1) {
+								alert('请更新至最新版app后再进行操作')
+								return
+							}
+							if (authFlag) {
+								iCityBridge.getDHToken((data) => {
+									window.localStorage.setItem('dhToken', data.data.token);
+								})
+							} else {
+								iCityBridge.auth();
+							}
+						} else {
+							iCityBridge.login();
+						}
+					});
+					function versionStringCompare(preVersion, lastVersion) {
+						var sources = preVersion.split('.');
+						var dests = lastVersion.split('.');
+						var maxL = Math.max(sources.length, dests.length);
+						var result = 0;
+						for (let i = 0; i < maxL; i++) {
+							let preValue = sources.length > i ? sources[i] : 0;
+							let preNum = isNaN(Number(preValue)) ? preValue.charCodeAt() : Number(preValue);
+							let lastValue = dests.length > i ? dests[i] : 0;
+							let lastNum = isNaN(Number(lastValue)) ? lastValue.charCodeAt() : Number(lastValue);
+							if (preNum < lastNum) {
+								result = -1;
+								break;
+							} else if (preNum > lastNum) {
+								result = 1;
+								break;
+							}
+						}
+						return result;
 					}
-					if (authFlag) {
-						iCityBridge.getDHToken((data) => {
-							window.localStorage.setItem('dhToken', data.data.token);
-						})
-					} else {
-						iCityBridge.auth();
-					}
-				} else {
-					iCityBridge.login();
-				}
-			});
-			function versionStringCompare(preVersion, lastVersion) {
-				var sources = preVersion.split('.');
-				var dests = lastVersion.split('.');
-				var maxL = Math.max(sources.length, dests.length);
-				var result = 0;
-				for (let i = 0; i < maxL; i++) {
-					let preValue = sources.length > i ? sources[i] : 0;
-					let preNum = isNaN(Number(preValue)) ? preValue.charCodeAt() : Number(preValue);
-					let lastValue = dests.length > i ? dests[i] : 0;
-					let lastNum = isNaN(Number(lastValue)) ? lastValue.charCodeAt() : Number(lastValue);
-					if (preNum < lastNum) {
-						result = -1;
-						break;
-					} else if (preNum > lastNum) {
-						result = 1;
-						break;
-					}
-				}
-				return result;
-			}
-		</script>
+				</script>
 		</body>
 		 </html>

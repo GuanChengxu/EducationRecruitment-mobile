@@ -9,7 +9,7 @@
 	"compileType": "miniprogram",
 	"libVersion": "2.9.2",
 	"appid": "touristappid",
-	"projectname": "模拟考试",
+	"projectname": "%E6%A8%A1%E6%8B%9F%E8%80%83%E8%AF%95",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
 	"condition": {
@@ -29,10 +29,10 @@
 			"current": 0,
 			"list": [
 				{
-					"name": "",
+					"name": "模式1",
 					"query": "",
 					"id": 0,
-					"pathName": "pages/login/login"
+					"pathName": "pages/index/index"
 				}
 			]
 		}

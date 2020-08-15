@@ -1,5 +1,5 @@
 <template>
-    <view class="vue-cropper" ref="cropper" :style="{ top : `${containerTop}px` }" v-show="show">
+    <view class="vue-cropper" ref="cropper" :style="{ top : '0px' }" v-show="show">
         <view class="cropper-box">
             <view class="cropper-box-canvas" @touchstart.stop.prevent="imgTouchStart" @touchmove.stop.prevent="imgMoveing" @touchend.stop.prevent="imgMoveEnd" :style="{
 					'width': imageWidth + 'px',

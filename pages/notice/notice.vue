@@ -1,13 +1,5 @@
 <template>
 	<view>
-		<view class="page-head">
-			<view class="uni-page-head-btn">
-				<i class="uni-btn-icon page-head-b" @click="back"></i>
-			</view>
-			<view class="page-head-title">
-				报名须知
-			</view>
-		</view>
 		<view class="concent_box">
 			<view class="notice_box">
 				<view class="text_box tsHtml" v-html="notice"></view>
