@@ -1005,31 +1005,46 @@ export default {
 			const that = this;
 			if(that.picList.length<6){
 				uni.chooseImage({
-					count: 6 - that.picList.length, //默认9
+					count: 1, //默认6
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: ['album'], //从相册选择
 					success: function (res) {
-						res.tempFiles.forEach((v,i)=>{
-							uni.uploadFile({
-								// 需要上传的地址
-								url: common.port.avatar,
-								// file  需要上传的文件
-								file: v,
-								name: 'file',
-								success(res) {
-									// 显示上传信息
-									if (res.statusCode == 200 && JSON.parse(res.data).code == 200) {
-										that.picList.push({url:JSON.parse(res.data).imgUrl});
-									} else {
-										uni.showToast({
-											title: '上传图片失败，请重新尝试',
-											icon: 'none',
-											duration: 2000
-										});
-									}
-								}
+						if(res.tempFiles.length + that.picList.length > 6){
+							uni.showToast({
+								title: '最多上传6张图片，请重新上传',
+								icon: 'none',
+								duration: 2000
 							});
-						})
+						}else{
+							uni.showLoading({
+							    title: ''
+							});
+							res.tempFiles.forEach((v,i)=>{
+								uni.uploadFile({
+									// 需要上传的地址
+									url: common.port.avatar,
+									// file  需要上传的文件
+									file: v,
+									name: 'file',
+									success(res) {
+										uni.hideLoading()
+										// 显示上传信息
+										if (res.statusCode == 200 && JSON.parse(res.data).code == 200) {
+											that.picList.push({url:JSON.parse(res.data).imgUrl});
+										} else {
+											uni.showToast({
+												title: '上传图片失败，请重新尝试',
+												icon: 'none',
+												duration: 2000
+											});
+										}
+									},
+									fail(){
+										uni.hideLoading()
+									}
+								});
+							})
+						}
 					}
 				});	
 			}
