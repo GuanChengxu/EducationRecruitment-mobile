@@ -55,7 +55,6 @@ export default {
 			dataType: 'json',
 			data: {},
 			success: result => {
-				console.log(result);
 				if (result.data.code == 200) {
 					that.status = result.data.data.applyStatus;
 					that.linkName = result.data.data.recruitTheme;

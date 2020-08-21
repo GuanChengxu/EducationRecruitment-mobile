@@ -1,4 +1,3 @@
-// const url = "https://ystwx.yantai.gov.cn/jntestapi"
 const url = "https://ystwx.yantai.gov.cn/jneduapi2"
 const port = {
 	recruitmentInfo:url+"/edu/recruitment/recruitmentInfo",//获取招聘列表

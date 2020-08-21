@@ -40,7 +40,7 @@
 							<view class="choseImg" @click="choseImg"></view>
 							<image class="img" v-bind:src="'https://ystwx.yantai.gov.cn/jneduapi2' + imageUrl" mode=""></image>
 							<image class="uploader" v-show="!imageUrl" src="/static/uploader.png" mode=""></image>
-							<image-cropper :src="tempFilePath" :crop-width="295" :crop-height="413" :crop-fixed="true" @confirm="confirm" @cancel="cancel"></image-cropper>
+							<image-cropper :src="tempFilePath" :crop-width="295" :crop-height="413" :crop-fixed="isCrop" @confirm="confirm" @cancel="cancel"></image-cropper>
 						</view>
 					</view>
 					<view class="select clearfix">
@@ -143,11 +143,11 @@
 						<view class="p">*(选填)请上传您的学历学位证书，教师资格证等证明</view>
 						<view class="pic_box clearfix">
 							<view class="img fl" v-for="(item,index) in picList" :key="index">
-							    <image class="close" @click="removePic(index)" src="/static/webx.png" alt=""></image>
+							    <image class="close" @click.stop="removePic(index)" src="/static/webx.png" alt=""></image>
 							    <image class="pic" :src="'https://ystwx.yantai.gov.cn/jneduapi2'+item.url" alt=""></image>
 							</view>
-							<view class="upload fl" v-if="picList.length<6">
-								<image @click="uploadPic" src="/static/addPic.png" mode=""></image>
+							<view class="upload fl" @click.stop="uploadPic" v-if="picList.length<6">
+								<image src="/static/addPic.png" mode=""></image>
 							</view>
 						</view>
 					</view>
@@ -232,12 +232,14 @@ import ImageCropper from '@/components/invinbg-image-cropper/invinbg-image-cropp
 export default {
 	data() {
 		return {
+			isdisabled:false,
 			todayTime:'',
 			todayTimeYear:'',
 			fileKey: '',
 			//裁剪图片
 			tempFilePath: '',
 			cropFilePath: '',
+			isCrop:true,
 			key: null,
 			status: null,
 			title: '选择岗位',
@@ -1016,34 +1018,28 @@ export default {
 								duration: 2000
 							});
 						}else{
-							uni.showLoading({
-							    title: ''
-							});
-							res.tempFiles.forEach((v,i)=>{
-								uni.uploadFile({
-									// 需要上传的地址
-									url: common.port.avatar,
-									// file  需要上传的文件
-									file: v,
-									name: 'file',
-									success(res) {
-										uni.hideLoading()
-										// 显示上传信息
-										if (res.statusCode == 200 && JSON.parse(res.data).code == 200) {
-											that.picList.push({url:JSON.parse(res.data).imgUrl});
-										} else {
-											uni.showToast({
-												title: '上传图片失败，请重新尝试',
-												icon: 'none',
-												duration: 2000
-											});
-										}
-									},
-									fail(){
-										uni.hideLoading()
-									}
+							let fileData = res.tempFiles[0];
+							const isJPG = fileData.type === 'image/jpeg' || fileData.type === 'image/png';
+							const isLt3k = fileData.size / 1024 / 1024 < 20;
+							if (!isJPG) {
+								uni.showToast({
+									title: '上传证明材料只能是 JPG和png 格式!',
+									icon: 'none',
+									duration: 2000
 								});
-							})
+							}
+							if (!isLt3k) {
+								uni.showToast({
+									title: '上传证明材料大小不能超过 20M!',
+									icon: 'none',
+									duration: 2000
+								});
+							}
+							if (isJPG && isLt3k) {
+								that.tempFilePath = res.tempFilePaths.shift();
+								that.fileKey = fileData.id;
+								that.isCrop = false;
+							}
 						}
 					}
 				});	
@@ -1176,6 +1172,7 @@ export default {
 					if (isJPG && isLt3k) {
 						that.tempFilePath = res.tempFilePaths.shift();
 						that.fileKey = fileData.id;
+						that.isCrop = true;
 					}
 				}
 			});
@@ -1471,7 +1468,8 @@ export default {
 					}
 				});
 			}
-			if (postData) {
+			if (postData && !that.isdisabled) {
+				that.isdisabled = true;
 				var data = {
 					certificationInfo: {},
 					credentials:[]
@@ -1496,8 +1494,6 @@ export default {
 				data.certificationInfo.serialNumber = this.userInfo.identifier.text;
 				data.certificationInfo.highestEducation = this.educationSelect.name;
 				data.graduateTime = this.userInfo.graduationTime.text;
-				console.log(this.companyData)
-				console.log(this.companySelected)
 				this.stationOldData.forEach((v, i) => {
 					if (v.jobId == this.stationSelected.value) {
 						data.postId = v.jobId;
@@ -1600,6 +1596,10 @@ export default {
 								duration: 2000
 							});
 						}
+						that.isdisabled = false;
+					},
+					fail:error=>{
+						that.isdisabled = false;
 					}
 				});
 			}
@@ -1905,25 +1905,55 @@ export default {
 				u8arr[n] = bstr.charCodeAt(n);
 			}
 			var fileData = new File([u8arr], that.fileKey, { type: mime });
-			uni.uploadFile({
-				// 需要上传的地址
-				url: common.port.avatar,
-				// file  需要上传的文件
-				file: fileData,
-				name: 'file',
-				success(res) {
-					// 显示上传信息
-					if (res.statusCode == 200 && JSON.parse(res.data).code == 200) {
-						that.imageUrl = JSON.parse(res.data).imgUrl;
-					} else {
-						uni.showToast({
-							title: '上传图片失败，请重新尝试',
-							icon: 'none',
-							duration: 2000
-						});
+			if(that.isCrop){
+				uni.uploadFile({
+					// 需要上传的地址
+					url: common.port.avatar,
+					// file  需要上传的文件
+					file: fileData,
+					name: 'file',
+					success(res) {
+						// 显示上传信息
+						console.log(res)
+						if (res.statusCode == 200 && JSON.parse(res.data).code == 200) {
+							that.imageUrl = JSON.parse(res.data).imgUrl;
+						} else {
+							uni.showToast({
+								title: '上传图片失败，请重新尝试',
+								icon: 'none',
+								duration: 2000
+							});
+						}
 					}
-				}
-			});
+				});
+			}else{
+				uni.showLoading({
+				    title: ''
+				});
+				uni.uploadFile({
+					// 需要上传的地址
+					url: common.port.avatar,
+					// file  需要上传的文件
+					file: fileData,
+					name: 'file',
+					success(res) {
+						uni.hideLoading()
+						// 显示上传信息
+						if (res.statusCode == 200 && JSON.parse(res.data).code == 200) {
+							that.picList.push({url:JSON.parse(res.data).imgUrl});
+						} else {
+							uni.showToast({
+								title: '上传图片失败，请重新尝试',
+								icon: 'none',
+								duration: 2000
+							});
+						}
+					},
+					fail(){
+						uni.hideLoading()
+					}
+				});
+			}
 		},
 		cancel() {
 			console.log('canceled');
